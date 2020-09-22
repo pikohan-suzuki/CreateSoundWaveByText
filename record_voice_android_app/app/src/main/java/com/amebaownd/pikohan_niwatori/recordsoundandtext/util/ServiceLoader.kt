@@ -1,4 +1,6 @@
-package com.amebaownd.pikohan_niwatori.recordsoundandtext.ui.home
+package com.amebaownd.pikohan_niwatori.recordsoundandtext.util
+
+import com.amebaownd.pikohan_niwatori.recordsoundandtext.repository.Repository
 
 object ServiceLoader {
     var repository: Repository? = null

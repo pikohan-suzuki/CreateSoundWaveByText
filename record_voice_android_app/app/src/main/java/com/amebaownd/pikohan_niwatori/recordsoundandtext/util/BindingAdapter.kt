@@ -1,4 +1,4 @@
-package com.amebaownd.pikohan_niwatori.recordsoundandtext.ui.home
+package com.amebaownd.pikohan_niwatori.recordsoundandtext.util
 
 //import androidx.databinding.BindingAdapter
 

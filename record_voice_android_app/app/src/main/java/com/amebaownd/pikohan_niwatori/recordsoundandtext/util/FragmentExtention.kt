@@ -1,4 +1,4 @@
-package com.amebaownd.pikohan_niwatori.recordsoundandtext.ui.home
+package com.amebaownd.pikohan_niwatori.recordsoundandtext.util
 
 import android.app.Activity
 import androidx.fragment.app.Fragment
