@@ -1,7 +1,10 @@
-package com.amebaownd.pikohan_niwatori.recordsoundandtext.ui.home
+package com.amebaownd.pikohan_niwatori.recordsoundandtext.util
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.amebaownd.pikohan_niwatori.recordsoundandtext.MainViewModel
+import com.amebaownd.pikohan_niwatori.recordsoundandtext.repository.Repository
+import com.amebaownd.pikohan_niwatori.recordsoundandtext.ui.home.HomeViewModel
 
 @Suppress("UNCHECKED_CAST")
 class ViewModelFactory(private val repository: Repository) :
@@ -10,8 +13,8 @@ class ViewModelFactory(private val repository: Repository) :
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         val t = with(modelClass) {
             when {
-                isAssignableFrom(MainFragmentViewModel::class.java) ->
-                    MainFragmentViewModel(repository!!)
+                isAssignableFrom(HomeViewModel::class.java) ->
+                    HomeViewModel(repository!!)
                 isAssignableFrom(MainViewModel::class.java) ->
                     MainViewModel()
                 else ->
