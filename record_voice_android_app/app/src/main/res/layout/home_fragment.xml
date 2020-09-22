@@ -8,14 +8,14 @@
 
         <variable
             name="viewModel"
-            type="com.example.recordsoundandtext.ui.main.MainViewModel" />
+            type="com.amebaownd.pikohan_niwatori.recordsoundandtext.ui.home.HomeViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/main"
+        android:id="@+id/home"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".ui.main.MainFragment">
+        tools:context=".ui.home.HomeFragment">
 
         <TextView
             android:id="@+id/textView"
