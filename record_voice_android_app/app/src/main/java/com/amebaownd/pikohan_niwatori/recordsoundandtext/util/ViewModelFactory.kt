@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.amebaownd.pikohan_niwatori.recordsoundandtext.MainViewModel
 import com.amebaownd.pikohan_niwatori.recordsoundandtext.repository.Repository
 import com.amebaownd.pikohan_niwatori.recordsoundandtext.ui.home.HomeViewModel
+import com.amebaownd.pikohan_niwatori.recordsoundandtext.ui.permission.PermissionViewModel
 
 @Suppress("UNCHECKED_CAST")
 class ViewModelFactory(private val repository: Repository) :
@@ -14,9 +15,11 @@ class ViewModelFactory(private val repository: Repository) :
         val t = with(modelClass) {
             when {
                 isAssignableFrom(HomeViewModel::class.java) ->
-                    HomeViewModel(repository!!)
+                    HomeViewModel(repository)
                 isAssignableFrom(MainViewModel::class.java) ->
                     MainViewModel()
+                isAssignableFrom(PermissionViewModel::class.java)->
+                    PermissionViewModel(repository)
                 else ->
                     throw IllegalArgumentException("Unknown ViewModelClass $modelClass")
             }

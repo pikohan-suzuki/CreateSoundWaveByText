@@ -3,12 +3,25 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/mainFragment">
+    app:startDestination="@id/permissionFragment">
 
     <fragment
         android:id="@+id/mainFragment"
         android:name="com.amebaownd.pikohan_niwatori.recordsoundandtext.ui.home.HomeFragment"
         android:label="main_fragment"
-        tools:layout="@layout/home_fragment"></fragment>
+        tools:layout="@layout/home_fragment">
+        <argument
+            android:name="id"
+            app:argType="string"
+            android:defaultValue="null" />
+    </fragment>
+    <fragment
+        android:id="@+id/permissionFragment"
+        android:name="com.amebaownd.pikohan_niwatori.recordsoundandtext.ui.permission.PermissionFragment"
+        android:label="PermissionFragment" >
+        <action
+            android:id="@+id/action_permissionFragment_to_mainFragment"
+            app:destination="@id/mainFragment" />
+    </fragment>
 
 </navigation>
