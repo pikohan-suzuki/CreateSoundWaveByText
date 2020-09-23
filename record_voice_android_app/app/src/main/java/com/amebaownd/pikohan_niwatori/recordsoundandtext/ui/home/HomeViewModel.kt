@@ -16,6 +16,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.json.JSONArray
+import org.json.JSONObject
 import java.io.*
 import java.lang.StringBuilder
 import java.text.SimpleDateFormat
@@ -28,10 +30,14 @@ class HomeViewModel(private val repository: Repository) : ViewModel(),
     val startStopButtonText: LiveData<String> = _startStopButtonText
 
     private var _readText = MutableLiveData<String>("------------")
-    val readText: LiveData<String> = _startStopButtonText
+    val readText: LiveData<String> = _readText
 
-    var startTime = ""
-    var recordSoundArray = shortArrayOf()
+    private var startTime = ""
+    private var recordSoundArray = shortArrayOf()
+    private var count = 0
+    private var kanaArray = JSONArray()
+    private var kanjiArray = JSONArray()
+    private var romaArray = JSONArray()
 
     private var isRecording = false
     private var fileName = ""
@@ -79,20 +85,21 @@ class HomeViewModel(private val repository: Repository) : ViewModel(),
             it.startRecording()
             it.read(buffer, 0, audioBufferSizeInByte)
         }
+
+        readFile()
+        readNext()
     }
 
     override fun onPeriodicNotification(recorder: AudioRecord) {
         recorder.read(buffer, 0, audioBufferSizeInByte)
         if (isRecording) {
+            Log.d("record", "listening")
             viewModelScope.launch(Dispatchers.Default) {
                 if (recordSoundArray.size == 0) {
                     startTime =
                         SimpleDateFormat("yyy.MM.dd-HH.mm.ss.SSS").format(Date(System.currentTimeMillis()))
                 }
                 recordSoundArray += buffer
-//                val readBuffer = buffer.copyOf()
-//                val df = SimpleDateFormat("yyy.MM.dd-HH.mm.ss.SSS")
-//                writeFile(df.format(Date(System.currentTimeMillis())), readBuffer)
             }
         }
     }
@@ -110,13 +117,36 @@ class HomeViewModel(private val repository: Repository) : ViewModel(),
                     BufferedWriter(outputStreamWriter).use { bw ->
                         bw.write(sendMessage + "\r\n")
                         bw.flush()
-                        Log.d("save file", sendMessage)
+                        Log.d("save file", "length : ${sendMessage.length}  message: $sendMessage")
                     }
                 }
             }
         } catch (e: IOException) {
             e.printStackTrace()
         }
+    }
+
+    private fun readFile() {
+        try {
+            FileInputStream(File("/storage/emulated/0/merosu.json")).use { fileInputStream ->
+                InputStreamReader(fileInputStream).use { inputStreamReader ->
+                    BufferedReader(inputStreamReader).use {
+                        val str = it.readText()
+                        val jsonObject = JSONObject(str)
+                        romaArray = jsonObject.getJSONArray("roma")
+                        kanaArray = jsonObject.getJSONArray("kana")
+                        kanjiArray = jsonObject.getJSONArray("kanji")
+                    }
+                }
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun readNext(){
+        _readText.value = kanjiArray.getString(count)+"\n"+kanaArray.getString(count)+"\n"+romaArray.getString(count)
+        count += 1
     }
 
     override fun onCleared() {
@@ -149,11 +179,11 @@ class HomeViewModel(private val repository: Repository) : ViewModel(),
     }
 
     fun onSkipButtonClicked() {
-        if (isRecording) {
-            isRecording = false
-            this.recordSoundArray = shortArrayOf()
-            _startStopButtonText.value = "START"
-        }
+        isRecording = false
+        isRecording = false
+        this.recordSoundArray = shortArrayOf()
+        _startStopButtonText.value = "START"
+        readNext()
     }
 
     override fun onMarkerReached(p0: AudioRecord?) {
