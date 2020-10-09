@@ -32,14 +32,17 @@ class HomeViewModel(private val repository: Repository) : ViewModel(),
     private var _readText = MutableLiveData<String>("------------")
     val readText: LiveData<String> = _readText
 
+    private var _isRecording = MutableLiveData<Boolean>(false)
+    val isRecording : LiveData<Boolean> = _isRecording
+
+
     private var startTime = ""
     private var recordSoundArray = shortArrayOf()
     private var count = 0
     private var kanaArray = JSONArray()
     private var kanjiArray = JSONArray()
-    private var romaArray = JSONArray()
 
-    private var isRecording = false
+    private var romaArray = JSONArray()
     private var fileName = ""
     private lateinit var recordFile: File
     private val audioBufferSizeInByte = Math.max(
@@ -92,7 +95,7 @@ class HomeViewModel(private val repository: Repository) : ViewModel(),
 
     override fun onPeriodicNotification(recorder: AudioRecord) {
         recorder.read(buffer, 0, audioBufferSizeInByte)
-        if (isRecording) {
+        if (_isRecording.value == true) {
             Log.d("record", "listening")
             viewModelScope.launch(Dispatchers.Default) {
                 if (recordSoundArray.size == 0) {
@@ -107,8 +110,9 @@ class HomeViewModel(private val repository: Repository) : ViewModel(),
     private fun writeFile() {
         val message = StringBuilder()
         message.append("$startTime,")
+        message.append("${this.romaArray.getString(count-1)},")
         recordSoundArray.forEach {
-            message.append(it.toString())
+            message.append("${it.toString()},")
         }
         val sendMessage = message.substring(0, message.length - 1)
         try {
@@ -151,7 +155,7 @@ class HomeViewModel(private val repository: Repository) : ViewModel(),
 
     override fun onCleared() {
         super.onCleared()
-        isRecording = false
+        _isRecording.value = false
         mAudioRecord?.let {
             it.stop()
             it.release()
@@ -160,27 +164,27 @@ class HomeViewModel(private val repository: Repository) : ViewModel(),
     }
 
     fun onStartStopButtonClicked() {
-        isRecording = !isRecording
-        if (isRecording) {
+        _isRecording.value = !(_isRecording.value!!)
+        if (_isRecording.value == true) {
             _startStopButtonText.value = "STOP"
             this.recordSoundArray = shortArrayOf()
         } else {
             _startStopButtonText.value = "START"
             writeFile()
+            readNext()
         }
     }
 
     fun onRetakeButtonClicked() {
-        if (isRecording) {
-            isRecording = false
+        if (_isRecording.value == true) {
+            _isRecording.value = false
             this.recordSoundArray = shortArrayOf()
             _startStopButtonText.value = "START"
         }
     }
 
     fun onSkipButtonClicked() {
-        isRecording = false
-        isRecording = false
+        _isRecording.value = false
         this.recordSoundArray = shortArrayOf()
         _startStopButtonText.value = "START"
         readNext()
